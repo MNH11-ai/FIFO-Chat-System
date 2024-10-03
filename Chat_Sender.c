@@ -26,10 +26,8 @@ void signal_handler(int sig) {
 int main() {
     char buffer[BUF_SIZE];
 
-    // Signal handling to ensure cleanup on interruption
     signal(SIGINT, signal_handler);
 
-    // Create FIFOs for communication
     if (mkfifo(SenderPipe, 0666) < 0 && errno != EEXIST) {
         perror("Error creating sender_fifo");
         exit(EXIT_FAILURE);
@@ -55,9 +53,8 @@ int main() {
 
         printf("You (😊): ");
         fgets(buffer, BUF_SIZE, stdin);
-        buffer[strcspn(buffer, "\n")] = 0;  // Remove trailing newline
+        buffer[strcspn(buffer, "\n")] = 0;
 
-        // Confirm exit command
         if (strcmp(buffer, "exit") == 0) {
             char exitMessage[] = "User 1 has left the chat. Goodbye! 😊";
             write(Receiver, exitMessage, strlen(exitMessage) + 1);
@@ -67,8 +64,6 @@ int main() {
 
         write(Receiver, buffer, strlen(buffer) + 1);
         close(Receiver);
-
-        
 
         int Sender = open(SenderPipe, O_RDONLY);
         if (Sender < 0) {
